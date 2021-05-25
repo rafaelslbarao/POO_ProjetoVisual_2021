@@ -6,14 +6,16 @@
 package br.com.rafael.exemploprojetovisual2;
 
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
  * @author Rafael
  */
 public class TelaPrincipal extends javax.swing.JFrame {
-    
+
     private CadastraControlador controlador;
+    private Pessoa pessoaEmEdicao;
 
     /**
      * Creates new form TelaPrincipal
@@ -21,6 +23,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
     public TelaPrincipal() {
         initComponents();
         controlador = new CadastraControlador();
+        reiniciaTela();
     }
 
     /**
@@ -33,6 +36,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private void initComponents() {
 
         bgAtivo = new javax.swing.ButtonGroup();
+        btSalvar1 = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         tfNome = new javax.swing.JTextField();
@@ -42,14 +46,23 @@ public class TelaPrincipal extends javax.swing.JFrame {
         rbSim = new javax.swing.JRadioButton();
         rbNao = new javax.swing.JRadioButton();
         btSalvar = new javax.swing.JButton();
-        dpTelas = new javax.swing.JDesktopPane();
-        jButton1 = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tbCadastros = new javax.swing.JTable();
+        btRemover = new javax.swing.JButton();
+        btAtualizar = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
         jMenu3 = new javax.swing.JMenu();
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
+
+        btSalvar1.setText("Salvar");
+        btSalvar1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btSalvar1ActionPerformed(evt);
+            }
+        });
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
@@ -80,21 +93,50 @@ public class TelaPrincipal extends javax.swing.JFrame {
             }
         });
 
-        javax.swing.GroupLayout dpTelasLayout = new javax.swing.GroupLayout(dpTelas);
-        dpTelas.setLayout(dpTelasLayout);
-        dpTelasLayout.setHorizontalGroup(
-            dpTelasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 380, Short.MAX_VALUE)
-        );
-        dpTelasLayout.setVerticalGroup(
-            dpTelasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 151, Short.MAX_VALUE)
-        );
+        tbCadastros.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
 
-        jButton1.setText("Adicionar Janela Interna");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            },
+            new String [] {
+                "Nome", "Sexo", "Ativo"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tbCadastros.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tbCadastros.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tbCadastrosMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tbCadastros);
+
+        btRemover.setBackground(new java.awt.Color(204, 0, 0));
+        btRemover.setForeground(new java.awt.Color(255, 255, 255));
+        btRemover.setText("Remover");
+        btRemover.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btRemoverActionPerformed(evt);
+            }
+        });
+
+        btAtualizar.setText("Atualizar");
+        btAtualizar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btAtualizarActionPerformed(evt);
             }
         });
 
@@ -109,19 +151,26 @@ public class TelaPrincipal extends javax.swing.JFrame {
                     .addComponent(cbSexo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btSalvar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(rbSim, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(rbNao, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 377, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                                .addComponent(rbSim, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(rbNao, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(btSalvar, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton1))
-                    .addComponent(dpTelas))
+                        .addComponent(btAtualizar, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btRemover, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(28, 28, 28)))
                 .addContainerGap())
             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel1Layout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 377, Short.MAX_VALUE)
                     .addContainerGap()))
         );
         jPanel1Layout.setVerticalGroup(
@@ -138,18 +187,20 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(rbSim)
-                    .addComponent(rbNao)
-                    .addComponent(jButton1))
+                    .addComponent(rbNao))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(dpTelas)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 340, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btSalvar)
-                .addContainerGap())
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btSalvar)
+                    .addComponent(btRemover)
+                    .addComponent(btAtualizar))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel1Layout.createSequentialGroup()
                     .addGap(80, 80, 80)
                     .addComponent(jLabel4)
-                    .addContainerGap(144, Short.MAX_VALUE)))
+                    .addContainerGap(475, Short.MAX_VALUE)))
         );
 
         jMenu1.setText("File");
@@ -174,41 +225,144 @@ public class TelaPrincipal extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 23, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btSalvarActionPerformed
+        if(!validaTela())
+            return;
+
+        Pessoa novaPessoa = controlador.salvaNovoCadastro(tfNome.getText(), cbSexo.getSelectedItem().toString(), rbSim.isSelected());
+        adicionaNaLista(novaPessoa);
+        reiniciaTela();
+    }//GEN-LAST:event_btSalvarActionPerformed
+
+    private void btRemoverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btRemoverActionPerformed
+        if (tbCadastros.getSelectedRow() >= 0) {
+            controlador.removeRegistro(tbCadastros.getSelectedRow());
+            removeDaLista(tbCadastros.getSelectedRow());
+            reiniciaTela();
+        }
+    }//GEN-LAST:event_btRemoverActionPerformed
+
+    private void btSalvar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btSalvar1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btSalvar1ActionPerformed
+
+    private void tbCadastrosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbCadastrosMouseClicked
+        Pessoa pessoaClicada = controlador.get(tbCadastros.getSelectedRow());
+        if(pessoaClicada != pessoaEmEdicao)
+        {
+            pessoaEmEdicao = pessoaClicada;
+            carregaInformacoes();
+            controlaEdicao();
+        }
+    }//GEN-LAST:event_tbCadastrosMouseClicked
+
+    private void btAtualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btAtualizarActionPerformed
+          if(!validaTela())
+              return;
+          
+          controlador.atualizaPessoa(pessoaEmEdicao, tfNome.getText(), cbSexo.getSelectedItem().toString(), rbSim.isSelected());
+          atualizaLista(tbCadastros.getSelectedRow());
+          reiniciaTela();
+    }//GEN-LAST:event_btAtualizarActionPerformed
+
+    private void carregaInformacoes()
+    {
+        tfNome.setText(pessoaEmEdicao.getNome());
+        for(int i = 0; i < cbSexo.getItemCount(); i ++)
+        {
+            if(cbSexo.getItemAt(i).equals(pessoaEmEdicao.getSexo()))
+            {
+                cbSexo.setSelectedIndex(i);
+                break;
+            }
+        }
+        if(pessoaEmEdicao.estaAtiva())
+            rbSim.setSelected(true);
+        else
+            rbNao.setSelected(true);
+        
+    }   
+    
+    private void adicionaNaLista(Pessoa pessoa) {
+        DefaultTableModel model = (DefaultTableModel) tbCadastros.getModel();
+        model.addRow(new Object[]{pessoa.getNome(), pessoa.getSexo(), pessoa.getAtivo()});
+    }
+
+    private void removeDaLista(int posicao) {
+        DefaultTableModel model = (DefaultTableModel) tbCadastros.getModel();
+        model.removeRow(posicao);
+    }
+    
+    private void atualizaLista(int posicao)
+    {
+        DefaultTableModel model = (DefaultTableModel) tbCadastros.getModel();
+        model.setValueAt(pessoaEmEdicao.getNome(), posicao, 0);
+        model.setValueAt(pessoaEmEdicao.getSexo(), posicao, 1);
+        model.setValueAt(pessoaEmEdicao.getAtivo(), posicao, 2);
+    }
+
+    private void reiniciaTela() {
+        tfNome.setText("");
+        cbSexo.setSelectedIndex(0);
+        bgAtivo.clearSelection();
+        tfNome.requestFocus();
+        //
+        btAtualizar.setVisible(false);
+        btRemover.setVisible(false);
+        //
+        tbCadastros.clearSelection();
+        //
+        pessoaEmEdicao = null;
+        //
+        controlaEdicao();
+    }
+
+    private void controlaEdicao() {
+        if (pessoaEmEdicao != null) {
+            btSalvar.setVisible(false);
+            btRemover.setVisible(true);
+            btAtualizar.setVisible(true);
+        } else {
+            btSalvar.setVisible(true);
+            btRemover.setVisible(false);
+            btAtualizar.setVisible(false);
+        }
+    }
+    
+    private boolean validaTela()
+    {
         ResultadoValidacao validacaoNome = controlador.validaNome(tfNome.getText());
         if (!validacaoNome.isResultado()) {
             JOptionPane.showMessageDialog(this, validacaoNome.getMsgErro(), "Validação", JOptionPane.INFORMATION_MESSAGE);
-            return;
+            return false;
         }
-        
+
         ResultadoValidacao validacaoSexo = controlador.validaSexo(cbSexo.getSelectedItem().toString());
         if (!validacaoSexo.isResultado()) {
             JOptionPane.showMessageDialog(this, validacaoSexo.getMsgErro(), "Validação", JOptionPane.INFORMATION_MESSAGE);
-            return;
+            return false;
         }
-        
+
         ResultadoValidacao validacaoAtivo = controlador.validaAtivo(rbSim.isSelected() || rbNao.isSelected());
         if (!validacaoAtivo.isResultado()) {
             JOptionPane.showMessageDialog(this, validacaoAtivo.getMsgErro(), "Validação", JOptionPane.INFORMATION_MESSAGE);
-            return;
+            return false;
         }
-    }//GEN-LAST:event_btSalvarActionPerformed
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        JanelaInterna janelaInterna = new JanelaInterna();
-        dpTelas.add(janelaInterna);
-        janelaInterna.setVisible(true);
-    }//GEN-LAST:event_jButton1ActionPerformed
+        
+        return true;
+    }
 
     /**
      * @param args the command line arguments
@@ -245,12 +399,14 @@ public class TelaPrincipal extends javax.swing.JFrame {
         });
     }
 
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup bgAtivo;
+    private javax.swing.JButton btAtualizar;
+    private javax.swing.JButton btRemover;
     private javax.swing.JButton btSalvar;
+    private javax.swing.JButton btSalvar1;
     private javax.swing.JComboBox<String> cbSexo;
-    private javax.swing.JDesktopPane dpTelas;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;
@@ -261,8 +417,10 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JRadioButton rbNao;
     private javax.swing.JRadioButton rbSim;
+    private javax.swing.JTable tbCadastros;
     private javax.swing.JTextField tfNome;
     // End of variables declaration//GEN-END:variables
 }
